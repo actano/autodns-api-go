@@ -1,34 +1,30 @@
 package zone
 
 import (
-	"encoding/xml"
-	"errors"
 	"github.com/actano/autodns-api-go/pkg/api"
 )
 
-type task struct {
-	Code    string           `xml:"code"`
+type updateBulkTask struct {
+	api.Task
 	Zone    zone             `xml:"zone"`
 	Adds    []ResourceRecord `xml:"default>rr_add"`
 	Removes []ResourceRecord `xml:"default>rr_rem"`
 }
 
 type updateBulkRequest struct {
-	XMLName xml.Name `xml:"request"`
-	Auth    api.Auth `xml:"auth"`
-	Task    task     `xml:"task"`
+	api.Request
+	Task updateBulkTask `xml:"task"`
 }
 
-type updateBulkResponse struct {
-	XMLName xml.Name           `xml:"response"`
-	Status  api.ResponseStatus `xml:"result>status"`
+type UpdateBulkResponse struct {
+	api.Response
 }
 
-func newUpdateBulkRequest(zoneName string, adds []ResourceRecord, removes []ResourceRecord, auth api.Auth) updateBulkRequest {
-	return updateBulkRequest{
-		Auth: auth,
-		Task: task{
-			Code: "0202001",
+func (c *ZoneService) newUpdateBulkRequest(zoneName string, adds []ResourceRecord, removes []ResourceRecord) *updateBulkRequest {
+	return &updateBulkRequest{
+		Request: api.NewRequest(c.client.Auth()),
+		Task: updateBulkTask{
+			Task: api.NewTask("0202001"),
 			Zone: zone{
 				Name: zoneName,
 			},
@@ -38,29 +34,14 @@ func newUpdateBulkRequest(zoneName string, adds []ResourceRecord, removes []Reso
 	}
 }
 
-func UpdateBulk(zoneName string, adds []ResourceRecord, removes []ResourceRecord, auth api.Auth) error {
-	request := newUpdateBulkRequest(zoneName, adds, removes, auth)
-	data, err := xml.Marshal(request)
+func (c *ZoneService) UpdateBulk(zoneName string, adds []ResourceRecord, removes []ResourceRecord) error {
+	request := c.newUpdateBulkRequest(zoneName, adds, removes)
+	response := &UpdateBulkResponse{}
+
+	err := c.client.MakeRequest(request, response)
 
 	if err != nil {
 		return err
-	}
-
-	response, err := api.MakeRequest(data)
-
-	if err != nil {
-		return err
-	}
-
-	updateBulkResponse := &updateBulkResponse{}
-	err = xml.Unmarshal(response, updateBulkResponse)
-
-	if err != nil {
-		return err
-	}
-
-	if updateBulkResponse.Status.Type != "success" {
-		return errors.New("UpdateBulk was not successful")
 	}
 
 	return nil
