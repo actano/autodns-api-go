@@ -15,12 +15,17 @@ type ResourceRecord struct {
 	TTL   uint   `xml:"ttl"`
 }
 
-type ZoneService struct {
+type ZoneService interface {
+	UpdateBulk(zoneName string, adds []ResourceRecord, removes []ResourceRecord) error
+	GetZoneInfo(zoneName string) (*ZoneInfo, error)
+}
+
+type zoneService struct {
 	client api.Client
 }
 
-func NewZoneService(client api.Client) *ZoneService {
-	return &ZoneService{
+func NewZoneService(client api.Client) ZoneService {
+	return &zoneService{
 		client: client,
 	}
 }

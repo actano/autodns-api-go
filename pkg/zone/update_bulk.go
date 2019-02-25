@@ -20,7 +20,7 @@ type UpdateBulkResponse struct {
 	api.Response
 }
 
-func (c *ZoneService) newUpdateBulkRequest(zoneName string, adds []ResourceRecord, removes []ResourceRecord) *updateBulkRequest {
+func (c *zoneService) newUpdateBulkRequest(zoneName string, adds []ResourceRecord, removes []ResourceRecord) *updateBulkRequest {
 	return &updateBulkRequest{
 		Request: api.NewRequest(c.client.Auth()),
 		Task: updateBulkTask{
@@ -34,7 +34,7 @@ func (c *ZoneService) newUpdateBulkRequest(zoneName string, adds []ResourceRecor
 	}
 }
 
-func (c *ZoneService) UpdateBulk(zoneName string, adds []ResourceRecord, removes []ResourceRecord) error {
+func (c *zoneService) UpdateBulk(zoneName string, adds []ResourceRecord, removes []ResourceRecord) error {
 	request := c.newUpdateBulkRequest(zoneName, adds, removes)
 	response := &UpdateBulkResponse{}
 

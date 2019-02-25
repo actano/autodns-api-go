@@ -23,7 +23,7 @@ type ZoneInfo struct {
 	Records []ResourceRecord `xml:"result>data>zone>rr"`
 }
 
-func (c *ZoneService) newZoneInfoRequest(zoneName string) *zoneInfoRequest {
+func (c *zoneService) newZoneInfoRequest(zoneName string) *zoneInfoRequest {
 	return &zoneInfoRequest{
         Request: api.NewRequest(c.client.Auth()),
 		Task: zoneTask{
@@ -35,7 +35,7 @@ func (c *ZoneService) newZoneInfoRequest(zoneName string) *zoneInfoRequest {
 	}
 }
 
-func (c *ZoneService) GetZoneInfo(zoneName string) (*ZoneInfo, error) {
+func (c *zoneService) GetZoneInfo(zoneName string) (*ZoneInfo, error) {
 	request := c.newZoneInfoRequest(zoneName)
 	response := &zoneInfoResponse{}
 

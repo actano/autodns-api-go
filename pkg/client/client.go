@@ -17,7 +17,7 @@ const (
 type AutoDnsClient struct {
 	auth     api.Auth
 	Endpoint string
-	Zone     *zone.ZoneService
+	Zone     zone.ZoneService
 }
 
 func NewAutoDnsClient(username, password, context string) *AutoDnsClient {
